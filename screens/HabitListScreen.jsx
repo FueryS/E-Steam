@@ -34,6 +34,10 @@ import EmptyState from "../components/EmptyState";
 import ErrorBanner from "../components/ErrorBanner";
 
 export default function HabitListScreen({ navigation }) {
+  const handleDevMenu = useCallback(() => {
+    navigation.navigate(ROUTES.DEV_MENU);
+  }, [navigation]);
+
   // ── Store ─────────────────────────────────────────────────────────────────
   const habits = useHabitStore((state) => state.habits);
   const streaks = useHabitStore((state) => state.streaks);
@@ -168,10 +172,6 @@ export default function HabitListScreen({ navigation }) {
       </SafeAreaView>
     );
   }
-
-  const handleDevMenu = useCallback(() => {
-    navigation.navigate(ROUTES.DEV_MENU);
-  }, [navigation]);
 
   // ── Main render ──────────────
   return (

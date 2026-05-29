@@ -35,6 +35,9 @@ import ErrorBanner from "../components/ErrorBanner";
 import HistoryDayPill from "../components/HistoryDayPill";
 
 export default function HabitHistoryScreen({ navigation }) {
+  const handleDevMenu = useCallback(() => {
+    navigation.navigate(ROUTES.DEV_MENU);
+  }, [navigation]);
   // ── Store ─────────────────────────────────────────────────────────────────
   const selectedHabit = useHabitStore((state) => state.selectedHabit);
   const selectedHabitHistory = useHabitStore(
@@ -110,10 +113,6 @@ export default function HabitHistoryScreen({ navigation }) {
       </SafeAreaView>
     );
   }
-
-  const handleDevMenu = useCallback(() => {
-    navigation.navigate(ROUTES.DEV_MENU);
-  }, [navigation]);
 
   // ── Main render ───────────────────────────────────────────────────────────
   return (
