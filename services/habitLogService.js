@@ -10,8 +10,8 @@
  *   This distinction matters for streak calculation — see streakService.js.
  */
 
-import { getDatabase } from './databaseService';
-import { getTodayDate, formatDate } from './dateService';
+import { getDatabase } from "./databaseService";
+import { getTodayDate, formatDate } from "./dateService";
 
 /**
  * Marks a habit as completed on a given date.
@@ -29,7 +29,7 @@ export async function markHabitCompleted(habitId, date, db) {
     `INSERT INTO habit_logs (habit_id, date, completed)
      VALUES (?, ?, 1)
      ON CONFLICT(habit_id, date) DO UPDATE SET completed = 1`,
-    [habitId, formatDate(targetDate)]
+    [habitId, formatDate(targetDate)],
   );
 }
 
@@ -50,8 +50,8 @@ export async function unmarkHabitCompleted(habitId, date, db) {
   const targetDate = date || getTodayDate();
 
   await database.runAsync(
-    'DELETE FROM habit_logs WHERE habit_id = ? AND date = ?',
-    [habitId, formatDate(targetDate)]
+    "DELETE FROM habit_logs WHERE habit_id = ? AND date = ?",
+    [habitId, formatDate(targetDate)],
   );
 }
 
@@ -91,8 +91,8 @@ export async function getHabitLogByDate(habitId, date, db) {
   const database = db || getDatabase();
 
   const row = await database.getFirstAsync(
-    'SELECT id, habit_id, date, completed FROM habit_logs WHERE habit_id = ? AND date = ?',
-    [habitId, formatDate(date)]
+    "SELECT id, habit_id, date, completed FROM habit_logs WHERE habit_id = ? AND date = ?",
+    [habitId, formatDate(date)],
   );
 
   return row ?? null;
@@ -113,7 +113,7 @@ export async function getHabitLogs(habitId, db) {
      FROM habit_logs
      WHERE habit_id = ?
      ORDER BY date DESC`,
-    [habitId]
+    [habitId],
   );
 
   return rows;

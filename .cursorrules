@@ -1,0 +1,29 @@
+# Cursor Rules for E-Steam
+
+## 1. Prime Directives
+- **Sensory & Motion Design**: Read `.ai/sensoryAndMotionDesign.md` (Norman, Saffer, Refactoring UI, Apple HIG) for look & feel, haptics, and damped spring physics.
+- **Onboarding, Scheduling & Recovery**: Read `.ai/onboardingNotificationsAndScheduling.md` for:
+  - First-launch name prompt $\rightarrow$ Manifesto screen: *"Failing is not when you miss a day, failing is when you don't return after it."*
+  - Zero magic numbers. Centralized offline notifications (`expo-notifications`) and `.env` config.
+  - Active days of week selection. Unscheduled off-days appear resting/grayed-out and **count toward streaks by default**.
+  - 1-Day Grace Recovery: Prompt *"Did you complete this yesterday?"* if only 1 day was missed; never trigger if 2+ consecutive days missed.
+- **Rehab Badges & Wooden Cabinet**: Read `.ai/rehabBadgesAndCabinet.md` for:
+  - Top-Right master coin icon replacing profile avatar.
+  - Collector's wooden drawer cabinet with silver ($\le 23$) and gold ($\ge 24$) medallions.
+  - Permanent badges with dust/patina for deleted habits; compartment expansion for resurrected habits.
+  - Hold-to-collect ritual (`COLLECT_HOLD_DURATION_MS = 400`, expanding ripple, jitter, haptic escalation, badge pop-out, 3D Y-axis coin spin).
+  - No lazy rendering; use high-fidelity SVGs/shaders/textures.
+- **Behavioral Science & Analytics**: Read `.ai/behavioralScienceAndAnalytics.md` (Lally, Clear, Fogg, Kahneman) for:
+  - Full Calendar History from creation to current date.
+  - Consistency Analytics: Consistency Index ($CI$) chart and rolling progress.
+  - Next-Streak Prediction: Empirical Bayesian formula modeling future streak longevity.
+- **Architecture**: Read `.ai/architecture.md` before changing stores, services, or SQLite queries.
+- **Active Sprint**: Read `.ai/activeContext.md` to check immediate goals.
+
+## 2. Non-Negotiable Rules
+- **No Pseudo-Icons**: Never build icons with nested `View`s and borders. Use `@expo/vector-icons`.
+- **No Hardcoded Styles or Magic Numbers**: Always use `constants/theme.js` and `constants/config.js` tokens.
+- **Haptic Tactility**: All state changes and button presses must trigger `expo-haptics`.
+- **Spring Physics**: Use damped springs (`damping: 15, stiffness: 150`) over linear animations.
+- **Preserve Architecture**: UI -> Zustand Store -> Service Layer -> SQLite (`expo-sqlite`). No raw SQL in UI or Zustand.
+- **Expo Version**: Always verify Expo SDK 54 compatibility (https://docs.expo.dev/versions/v54.0.0/).

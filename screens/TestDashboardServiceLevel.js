@@ -45,7 +45,7 @@ import {
 
 import { calculateHabitStreak } from "../services/streakService";
 
-import { getLast7DaysHistory } from "../services/historyService";
+import { getHabitHistory, getLast7DaysHistory } from "../services/historyService";
 
 import {
   getTodayDate,
@@ -177,13 +177,45 @@ export default function TestDashboardServiceLevel() {
     }
     await run("Seed 7-Day Perfect Streak", async () => {
       const today = getTodayDate();
+      const pastDate = subtractDays(today, 6);
+      const db = getDatabase();
+      await db.runAsync(
+        "UPDATE habits SET created_at = ? WHERE id = ? AND created_at > ?",
+        [new Date(pastDate + "T00:00:00").toISOString(), id, pastDate]
+      );
       for (let i = 0; i < 7; i++) {
         await markHabitCompleted(id, subtractDays(today, i));
       }
       return {
         seeded: 7,
         habitId: id,
-        from: subtractDays(today, 6),
+        from: pastDate,
+        to: today,
+      };
+    });
+  }
+
+  async function handleSeed30DayStreak() {
+    const id = parseInt(streakHabitId, 10);
+    if (!id) {
+      err("Seed 30-Day Streak", new Error("Enter a valid Habit ID first"));
+      return;
+    }
+    await run("Seed 30-Day Perfect Streak", async () => {
+      const today = getTodayDate();
+      const pastDate = subtractDays(today, 29);
+      const db = getDatabase();
+      await db.runAsync(
+        "UPDATE habits SET created_at = ? WHERE id = ? AND created_at > ?",
+        [new Date(pastDate + "T00:00:00").toISOString(), id, pastDate]
+      );
+      for (let i = 0; i < 30; i++) {
+        await markHabitCompleted(id, subtractDays(today, i));
+      }
+      return {
+        seeded: 30,
+        habitId: id,
+        from: pastDate,
         to: today,
       };
     });
@@ -382,6 +414,11 @@ export default function TestDashboardServiceLevel() {
             onPress={handleSeedPerfectStreak}
           />
           <Btn
+            label="Seed 30-Day Perfect Streak"
+            color="#059669"
+            onPress={handleSeed30DayStreak}
+          />
+          <Btn
             label="Break Yesterday"
             color="#ea580c"
             onPress={handleBreakYesterday}
@@ -389,7 +426,7 @@ export default function TestDashboardServiceLevel() {
         </Section>
 
         {/* ══ E: HISTORY ═══════════════════════════════════════════════════ */}
-        <Section title="E — 7-Day History">
+        <Section title="E — Lifetime History">
           <Input
             label="Habit ID"
             value={historyHabitId}
@@ -397,10 +434,10 @@ export default function TestDashboardServiceLevel() {
             placeholder="e.g. 1"
           />
           <Btn
-            label="Load 7-Day History"
+            label="Load Habit History"
             onPress={() =>
-              run(`getLast7DaysHistory(${historyHabitId})`, () =>
-                getLast7DaysHistory(parseInt(historyHabitId, 10)),
+              run(`getHabitHistory(${historyHabitId})`, () =>
+                getHabitHistory(parseInt(historyHabitId, 10)),
               )
             }
           />

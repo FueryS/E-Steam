@@ -71,7 +71,9 @@ export default function HabitHistoryScreen({ navigation }) {
   // ── Derived values ────────────────────────────────────────────────────────
   const streak = selectedHabit ? (streaks[selectedHabit.id] ?? 0) : 0;
   const doneCount = selectedHabitHistory.filter((d) => d.completed).length;
+  const totalDays = selectedHabitHistory.length;
   const streakActive = streak > 0;
+  const allDone = totalDays > 0 && doneCount === totalDays;
 
   // ── Handlers ──────────────────────────────────────────────────────────────
   const handleBack = useCallback(() => {
@@ -129,7 +131,9 @@ export default function HabitHistoryScreen({ navigation }) {
           <Text style={styles.habitName} numberOfLines={2}>
             {selectedHabit.name}
           </Text>
-          <Text style={styles.sectionLabel}>Last 7 days</Text>
+          <Text style={styles.sectionLabel}>
+            {totalDays === 1 ? "1 day tracked" : `${totalDays} days tracked`}
+          </Text>
         </View>
 
         {/* Stats row: streak + completion summary */}
@@ -165,14 +169,14 @@ export default function HabitHistoryScreen({ navigation }) {
 
           {/* Completion summary card */}
           <View
-            style={[styles.statCard, doneCount === 7 && styles.statCardAllDone]}
+            style={[styles.statCard, allDone && styles.statCardAllDone]}
           >
             <View
               style={[
                 styles.statDot,
                 {
                   backgroundColor:
-                    doneCount === 7
+                    allDone
                       ? theme.colors.primary
                       : theme.colors.mutedText,
                 },
@@ -182,17 +186,17 @@ export default function HabitHistoryScreen({ navigation }) {
               <Text
                 style={[
                   styles.statValue,
-                  doneCount === 7 && styles.statValueDone,
+                  allDone && styles.statValueDone,
                 ]}
               >
-                {doneCount} / 7
+                {doneCount} / {totalDays}
               </Text>
               <Text style={styles.statLabel}>days completed</Text>
             </View>
           </View>
         </View>
 
-        {/* 7-day pill list */}
+        {/* History pill list (from today down to creation date) */}
         <View style={styles.pillList}>
           {selectedHabitHistory.map((day) => (
             <HistoryDayPill

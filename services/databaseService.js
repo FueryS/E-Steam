@@ -3,14 +3,14 @@
  * Owns the SQLite connection and schema.
  * All other services receive `db` from here — they never open their own connection.
  *
- * Schema design decisions:
+ *  * Schema design decisions:
  *  - habits.created_at stored as ISO string for portability
  *  - habit_logs uses a UNIQUE constraint on (habit_id, date) so toggling
  *    can safely use INSERT OR REPLACE without producing duplicate rows
  *  - date column is YYYY-MM-DD text — matches dateService output exactly
  */
 
-import * as SQLite from 'expo-sqlite';
+import * as SQLite from "expo-sqlite";
 
 /** Singleton db reference — module-level so it's shared across the app */
 let _db = null;
@@ -23,11 +23,12 @@ let _db = null;
 export async function initializeDatabase() {
   if (_db) return _db;
 
-  _db = await SQLite.openDatabaseAsync('habittracker.db');
+  _db = await SQLite.openDatabaseAsync("habittracker.adb");
 
   // WAL mode gives better concurrent read performance on mobile
-  await _db.execAsync('PRAGMA journal_mode = WAL;');
+  await _db.execAsync("PRAGMA journal_mode = WAL;");
 
+  // note: CreateTable is a user defined function
   await createTables(_db);
   return _db;
 }
@@ -41,7 +42,7 @@ export async function initializeDatabase() {
 export function getDatabase() {
   if (!_db) {
     throw new Error(
-      'Database not initialised. Call initializeDatabase() before using any service.'
+      "Database not initialised. Call initializeDatabase() before using any service.",
     );
   }
   return _db;
@@ -82,7 +83,7 @@ export async function dropTables(db) {
     DROP TABLE IF EXISTS habit_logs;
     DROP TABLE IF EXISTS habits;
   `);
-  console.warn('[databaseService] All tables dropped.');
+  console.warn("[databaseService] All tables dropped.");
 }
 
 /**

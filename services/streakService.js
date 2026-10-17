@@ -37,7 +37,7 @@
  */
 
 import { getDatabase } from './databaseService';
-import { getTodayDate, getYesterdayDate, subtractDays } from './dateService';
+import { getTodayDate, getYesterdayDate, subtractDays, formatDate } from './dateService';
 
 /**
  * Returns whether a habit was completed on a specific date.
@@ -53,7 +53,7 @@ export async function hasCompletedOnDate(habitId, date, db) {
   const row = await database.getFirstAsync(
     `SELECT id FROM habit_logs
      WHERE habit_id = ? AND date = ? AND completed = 1`,
-    [habitId, date]
+    [habitId, formatDate(date)]
   );
 
   return row !== null;
@@ -63,14 +63,11 @@ export async function hasCompletedOnDate(habitId, date, db) {
  * Calculates the current streak for a single habit.
  *
  * Algorithm:
- *  1. Determine the anchor day (today if done, yesterday if not, else 0).
- *  2. Walk backwards day by day from the anchor.
- *  3. Stop at the first day that has no completion.
- *  4. Return the count of consecutive completed days found.
- *
- * This is O(streak_length) DB reads. For typical streaks (1–365 days) this
- * is fast enough on mobile SQLite. If streaks grew into thousands of days,
- * a SQL window-function approach would be faster — see habitService notes.
+ *  1. Retrieve habit's creation date. Ghost days prior to creation are ignored.
+ *  2. Fetch all completed log dates for this habit.
+ *  3. Determine the anchor day (today if done; yesterday if not, provided the habit existed yesterday; else 0).
+ *  4. Walk backwards day by day from the anchor, bounded by creation date.
+ *  5. Return the streak count. Streaks can extend indefinitely ("go forever").
  *
  * @param {number} habitId
  * @param {SQLite.SQLiteDatabase} [db]
@@ -81,9 +78,24 @@ export async function calculateHabitStreak(habitId, db) {
   const today = getTodayDate();
   const yesterday = getYesterdayDate();
 
-  // Step 1: determine anchor
-  const doneToday = await hasCompletedOnDate(habitId, today, database);
-  const doneYesterday = await hasCompletedOnDate(habitId, yesterday, database);
+  // Step 1: Fetch habit creation date so ghost days prior to creation don't count
+  const habit = await database.getFirstAsync(
+    'SELECT created_at FROM habits WHERE id = ?',
+    [habitId]
+  );
+  const createdDate = habit?.created_at ? formatDate(habit.created_at) : null;
+
+  // Step 2: Fetch all completed dates for this habit
+  const rows = await database.getAllAsync(
+    'SELECT date FROM habit_logs WHERE habit_id = ? AND completed = 1 ORDER BY date DESC',
+    [habitId]
+  );
+  const completedDates = new Set(rows.map((r) => r.date));
+
+  // Step 3: determine anchor
+  const doneToday = completedDates.has(today);
+  const habitExistedYesterday = !createdDate || createdDate <= yesterday;
+  const doneYesterday = habitExistedYesterday && completedDates.has(yesterday);
 
   let anchor;
   if (doneToday) {
@@ -91,17 +103,17 @@ export async function calculateHabitStreak(habitId, db) {
   } else if (doneYesterday) {
     anchor = yesterday;
   } else {
-    // Neither today nor yesterday done → streak is broken
+    // Neither today nor valid yesterday done → streak is 0
     return 0;
   }
 
-  // Step 2–4: walk backwards from anchor
+  // Step 4: walk backwards from anchor, stopping if before creation date or missed
   let streak = 0;
   let cursor = anchor;
 
   while (true) {
-    const done = await hasCompletedOnDate(habitId, cursor, database);
-    if (!done) break;
+    if (createdDate && cursor < createdDate) break;
+    if (!completedDates.has(cursor)) break;
     streak += 1;
     cursor = subtractDays(cursor, 1);
   }

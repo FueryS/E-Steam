@@ -31,7 +31,7 @@ import {
   calculateHabitStreak,
   calculateMultipleHabitStreaks,
 } from "../services/streakService";
-import { getLast7DaysHistory } from "../services/historyService";
+import { getHabitHistory, getLast7DaysHistory } from "../services/historyService";
 
 // ── Error helper ──────────────────────────────────────────────────────────────
 /**
@@ -58,7 +58,7 @@ export const useHabitStore = create((set, get) => ({
   /** The habit object currently viewed on the History screen */
   selectedHabit: null,
 
-  /** 7-day history for selectedHabit: [{ date, completed, label }] */
+  /** Full history for selectedHabit (creation date to today): [{ date, completed, label }] */
   selectedHabitHistory: [],
 
   // Loading flags — each action owns exactly one flag
@@ -235,13 +235,13 @@ export const useHabitStore = create((set, get) => ({
 
   /**
    * loadHabitHistory(habitId)
-   * Fetches the last 7 days of completion data for the selected habit.
+   * Fetches the complete history from creation date to today for the selected habit.
    * Expected shape from service: [{ date, completed, label }]
    */
   loadHabitHistory: async (habitId) => {
     set({ isLoadingHistory: true, error: null });
     try {
-      const history = await getLast7DaysHistory(habitId);
+      const history = await getHabitHistory(habitId);
       set({ selectedHabitHistory: history });
     } catch (e) {
       set({ error: getErrorMessage(e) });
