@@ -42,9 +42,9 @@
 - [ ] 1-Day Retroactive Grace Recovery Toast:
   - [ ] Trigger on marking today when only yesterday was missed
   - [ ] Suppressed if 2+ consecutive days missed (Clear's "Never Miss Twice" rule)
-- [ ] Dev Menu hidden behind secret 5-tap gesture
-- [ ] Vector icon library integrated (`@expo/vector-icons`)
-- [ ] Haptic feedback integrated (`expo-haptics`)
+- [x] Dev Menu hidden behind secret 5-tap gesture
+- [x] Vector icon library integrated (`@expo/vector-icons`)
+- [x] Haptic feedback integrated (`expo-haptics`)
 - [ ] Premium design system in `theme.js` (colors, glass tokens, diffused shadows)
 - [ ] Smooth spring micro-interactions on habit toggle
 - [ ] Top-Right Master Medallion Icon (replacing profile picture)
@@ -56,13 +56,12 @@
 ### Diagnostics & Developer Tools
 - [x] Zustand store test dashboard (`TestDashboard.jsx`)
 - [x] Direct SQLite service-level test dashboard (`TestDashboardServiceLevel.js`)
-- [ ] Discreet developer trigger in production builds (5-tap header pattern)
+- [x] Discreet developer trigger in production builds (5-tap header pattern)
 
 ---
 
 ## Known Technical Debt & Issues
-- Hand-drawn `View` pseudo-icons in `HabitCard.jsx`.
-- Visible "Dev Menu" buttons on all primary screens.
+- Hand-drawn `View` pseudo-icons in `HabitCard.jsx` (to be refactored in Phase 2).
 - Flat single-layer elevation with default green-500 palette.
-- No haptic vibrations on user actions.
-- Magic numbers in time and duration calculations (needs `constants/config.js`).
+- No haptic vibrations on user actions in existing cards.
+

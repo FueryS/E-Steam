@@ -28,13 +28,11 @@ import {
 
 import { useHabitStore } from "../store/useHabitStore";
 import { theme } from "../constants/theme";
-import { ROUTES } from "../navigation/AppNavigator";
+import { MAX_HABIT_NAME_LENGTH } from "../constants/config";
 
 import AppButton from "../components/AppButton";
 import AppTextInput from "../components/AppTextInput";
 import ErrorBanner from "../components/ErrorBanner";
-
-const MAX_LENGTH = 40;
 
 export default function AddHabitScreen({ navigation }) {
   // ── Store ─────────────────────────────────────────────────────────────────
@@ -88,10 +86,6 @@ export default function AddHabitScreen({ navigation }) {
     navigation.goBack();
   }, [navigation]);
 
-  const handleDevMenu = useCallback(() => {
-    navigation.navigate(ROUTES.DEV_MENU);
-  }, [navigation]);
-
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <SafeAreaView style={styles.safe}>
@@ -125,7 +119,7 @@ export default function AddHabitScreen({ navigation }) {
               placeholder="Example: Drink water"
               error={localError}
               autoFocus
-              maxLength={MAX_LENGTH}
+              maxLength={MAX_HABIT_NAME_LENGTH}
               returnKeyType="done"
               onSubmitEditing={handleSubmit}
             />
@@ -145,13 +139,6 @@ export default function AddHabitScreen({ navigation }) {
               onPress={handleCancel}
               variant="ghost"
               disabled={isAddingHabit}
-            />
-            {/* Dev-only shortcut — subtle so it stays out of the way */}
-            <AppButton
-              title="Dev Menu"
-              onPress={handleDevMenu}
-              variant="ghost"
-              style={styles.devBtn}
             />
           </View>
         </ScrollView>
@@ -204,8 +191,5 @@ const styles = StyleSheet.create({
   // Button stack
   actions: {
     gap: theme.spacing.sm,
-  },
-  devBtn: {
-    opacity: 0.55, // visually de-emphasised — dev use only
   },
 });

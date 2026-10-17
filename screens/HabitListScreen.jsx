@@ -11,7 +11,7 @@
  * the edge case where the screen is focused before App.js finishes init.
  */
 
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useLayoutEffect, useCallback } from "react";
 import {
   SafeAreaView,
   View,
@@ -21,12 +21,15 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
+  Pressable,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 import { useHabitStore } from "../store/useHabitStore";
 import { ROUTES } from "../navigation/AppNavigator";
 import { theme } from "../constants/theme";
+import { CONFIG } from "../constants/config";
+import { useSecretDevTap } from "../hooks/useSecretDevTap";
 
 import AppButton from "../components/AppButton";
 import HabitCard from "../components/HabitCard";
@@ -34,9 +37,23 @@ import EmptyState from "../components/EmptyState";
 import ErrorBanner from "../components/ErrorBanner";
 
 export default function HabitListScreen({ navigation }) {
-  const handleDevMenu = useCallback(() => {
-    navigation.navigate(ROUTES.DEV_MENU);
-  }, [navigation]);
+  const handleSecretDevTap = useSecretDevTap(navigation);
+
+  // Hidden 5-tap gesture on the native navigation header title
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <Pressable
+          onPress={handleSecretDevTap}
+          hitSlop={CONFIG.A11Y.DEFAULT_HIT_SLOP}
+          accessibilityRole="header"
+          accessibilityLabel="Habits"
+        >
+          <Text style={styles.navHeaderTitle}>Habits</Text>
+        </Pressable>
+      ),
+    });
+  }, [navigation, handleSecretDevTap]);
 
   // ── Store ─────────────────────────────────────────────────────────────────
   const habits = useHabitStore((state) => state.habits);
@@ -140,7 +157,12 @@ export default function HabitListScreen({ navigation }) {
 
       <View style={styles.titleRow}>
         <View style={styles.titleGroup}>
-          <Text style={styles.screenTitle}>Today's Habits</Text>
+          <Pressable
+            onPress={handleSecretDevTap}
+            hitSlop={CONFIG.A11Y.DEFAULT_HIT_SLOP}
+          >
+            <Text style={styles.screenTitle}>Today's Habits</Text>
+          </Pressable>
           <Text style={styles.screenSubtitle}>
             Build consistency, one day at a time.
           </Text>
@@ -203,13 +225,6 @@ export default function HabitListScreen({ navigation }) {
           />
         }
         showsVerticalScrollIndicator={false}
-      />
-
-      <AppButton
-        title="Dev Menu"
-        onPress={handleDevMenu}
-        variant="ghost"
-        style={styles.devBtn}
       />
     </SafeAreaView>
   );
@@ -333,5 +348,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.sm,
     minHeight: 40,
+  },
+  navHeaderTitle: {
+    fontSize: theme.fontSize.lg,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
   },
 });

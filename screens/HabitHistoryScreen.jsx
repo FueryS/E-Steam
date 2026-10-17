@@ -24,7 +24,6 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from "react-native";
-import { ROUTES } from "../navigation/AppNavigator";
 import { useFocusEffect } from "@react-navigation/native";
 
 import { useHabitStore } from "../store/useHabitStore";
@@ -35,9 +34,6 @@ import ErrorBanner from "../components/ErrorBanner";
 import HistoryDayPill from "../components/HistoryDayPill";
 
 export default function HabitHistoryScreen({ navigation }) {
-  const handleDevMenu = useCallback(() => {
-    navigation.navigate(ROUTES.DEV_MENU);
-  }, [navigation]);
   // ── Store ─────────────────────────────────────────────────────────────────
   const selectedHabit = useHabitStore((state) => state.selectedHabit);
   const selectedHabitHistory = useHabitStore(
@@ -224,12 +220,6 @@ export default function HabitHistoryScreen({ navigation }) {
           style={styles.backBtn}
         />
       </ScrollView>
-      <AppButton
-        title="Dev Menu"
-        onPress={handleDevMenu}
-        variant="ghost"
-        style={styles.devBtn}
-      />
     </SafeAreaView>
   );
 }

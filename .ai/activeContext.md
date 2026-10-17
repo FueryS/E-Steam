@@ -19,19 +19,17 @@
 ---
 
 ## Recent Modifications:
-- Documented onboarding, rest day scheduling, local notifications, and 1-day grace recovery in `.ai/onboardingNotificationsAndScheduling.md`.
-- Documented sensory design literature in `.ai/sensoryAndMotionDesign.md`.
-- Documented behavioral analytics & prediction formulas in `.ai/behavioralScienceAndAnalytics.md`.
-- Documented Rehabilitation Badges & Collector's Cabinet in `.ai/rehabBadgesAndCabinet.md`.
-- Updated `AGENTS.md` and `.cursorrules` to enforce these guidelines.
+- Completed Phase 1:
+  - Installed `@expo/vector-icons`, `expo-haptics`, and `react-native-svg` (Expo SDK 54 compatible).
+  - Created `constants/config.js` to eliminate all magic numbers across the app.
+  - Implemented hidden 5-tap developer trigger hook `hooks/useSecretDevTap.js` with `Haptics.notificationAsync(Success)` confirmation.
+  - Attached secret 5-tap gesture to both the navigation header and screen header in `HabitListScreen.jsx`.
+  - Removed all visible "Dev Menu" buttons from user-facing screens (`HabitListScreen.jsx`, `AddHabitScreen.jsx`, and `HabitHistoryScreen.jsx`).
 
 ---
 
-## Immediate Next Steps:
-1. Move Dev Menu to secret 5-tap gesture on `HabitListScreen` header.
-2. Install `@expo/vector-icons`, `expo-haptics`, and `react-native-svg`.
-3. Create `constants/config.js` to eliminate all magic numbers.
-4. Build `screens/OnboardingScreen.jsx` and persist user name in SQLite `app_settings`.
-5. Upgrade `AddHabitScreen.jsx` with active weekday picker (`M, T, W, T, F, S, S`) and update `streakService.js` to count rest days toward streak.
-6. Refactor `HabitCard.jsx` with rest day states, vector icons, and the 1-day retroactive completion toast.
-7. Build `screens/TrophyCabinetScreen.jsx` and the Hold-to-Collect ritual.
+## Immediate Next Steps (Phase 2):
+1. Build `screens/OnboardingScreen.jsx` and persist user name in SQLite `app_settings`.
+2. Upgrade `AddHabitScreen.jsx` with active weekday picker (`M, T, W, T, F, S, S`) and update `streakService.js` to count rest days toward streak.
+3. Refactor `HabitCard.jsx` with rest day states, vector icons, and the 1-day retroactive completion toast.
+4. Build `screens/TrophyCabinetScreen.jsx` and the Hold-to-Collect ritual.

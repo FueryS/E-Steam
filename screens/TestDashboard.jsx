@@ -3,7 +3,7 @@
  * Developer-only screen for testing the full store surface.
  * All interactions go through the Zustand store — no direct service calls.
  *
- * Accessible from AddHabitScreen via the "Dev Menu" ghost button.
+ * Accessible via the secret 5-tap gesture on the header.
  */
 
 import React, { useState, useCallback } from "react";
